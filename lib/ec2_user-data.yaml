@@ -1,6 +1,6 @@
 #cloud-config
 cloud_final_modules:
-  - [users-groups, always]
+  - [scripts-user, users-groups, always]
 users:
   - default
   - name: admis
@@ -9,4 +9,35 @@ users:
     shell: /bin/bash
     ssh-authorized-keys:
       - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGsHMbqflou/Pow660rnIJq8wdtCnoJhzZfh6BAOWrxQ admis@admis-MS-7A34
-
+runcmd:
+  - echo "--- begin --- goofys installation ----------------------------------------------"
+  - echo "install fuse"
+  - sudo yum install -y fuse
+  - echo ""
+  - echo "install goofys"
+  - sudo curl -L https://github.com/kahing/goofys/releases/latest/download/goofys -o /usr/local/bin/goofys
+  - sudo chmod a+x /usr/local/bin/goofys
+  - echo "------------------------------------------------------------------------ end ---"
+  - echo ""
+  - echo ""
+  - echo "--- begin --- goofys installation ----------------------------------------------"
+  - echo "install fuse"
+  - sudo yum install -y fuse
+  - echo ""
+  - echo "install goofys"
+  - sudo curl -L https://github.com/kahing/goofys/releases/latest/download/goofys -o /usr/local/bin/goofys
+  - sudo chmod a+x /usr/local/bin/goofys
+  - echo "------------------------------------------------------------------------ end ---"
+  - echo ""
+  - echo ""
+  - echo "--- begin --- Automatic mount setting of AWS S3 and Mounting s3 ----------------"
+  - echo "Mount bucket setting 01"
+  - BUCKET_NAME=test-bucket-to-mount-from-ec2
+  - sudo mkdir /mnt/${BUCKET_NAME}
+  - sudo sh -c "echo '/usr/local/bin/goofys#${BUCKET_NAME} /mnt/${BUCKET_NAME} fuse _netdev,allow_other,--dir-mode=0775,--file-mode=0666,--uid=1000,--gid=1000,--region=ap-northeast-1 0 0' >> /etc/fstab"
+  - echo ""
+  - echo "Mount"
+  - sudo mount -fav
+  - echo "------------------------------------------------------------------------ end ---"
+  - echo ""
+  - echo ""

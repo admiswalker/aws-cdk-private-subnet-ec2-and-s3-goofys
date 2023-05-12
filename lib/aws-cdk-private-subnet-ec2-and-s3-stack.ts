@@ -14,6 +14,12 @@ export class AwsCdkTemplateStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: AwsCdkTemplateStackProps) {
     super(scope, id, props);
 
+    // S3 bucket
+    const s3_bucket = new cdk.aws_s3.Bucket(this, 'test-bucket-to-mount-from-ec2', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+    })
+
     // VPC
     const nat_instance = ec2.NatProvider.instance({
       instanceType: new InstanceType('t3a.nano'),

@@ -29,10 +29,16 @@ ssh -i ~/.ssh/ec2/id_ed25519 admis@$EC2_INSTANCE_ID
   ```
 
 ## 認証情報の確認
-```
+
+```bash
 aws configure list
 ```
+※ プロキシ経由で AWS CLI を使用する場合は，環境変数に `no_proxy=169.254.169.254` の設定が必要な場合がある．
+AWS CLI はインスタンスメタデータを `169.254.169.254` から取得している．`169.254.169.254` は EC2 からの直接通信でのみアクセスできる AWS のシステムのアドレスである．
+OS 側でプロキシを設定している場合，AWS CLI は EC2 に割り当てた IAM role の認証情報を，プロキシ経由で取得しようとするため，システムから読み込めず，None と表示される．
 
+- [AWS CLIでプロキシサーバを使う場合の注意](https://dev.classmethod.jp/articles/aws-cli-iamrole/)
+- [プロキシに阻まれながらAWS CLIをEC2インスタンスから動かしたときの話](https://qiita.com/izey0306/items/77bcbb79be1ede95fe6c)
 
 ## goofys のインストール
 
@@ -95,6 +101,12 @@ $ cat /etc/fstab
 ### 参考資料
 
 - [EC2＋goofysでS3バケットをマウントしたい](https://qiita.com/0xmks/items/f1d325ce2de6a805c6f7)
+
+## cloud-init のログを確認する
+
+```bash
+sudo cat /var/log/cloud-init-output.log
+```
 
 ---
 
