@@ -1,7 +1,7 @@
 #cloud-config
 cloud_final_modules:
   - [scripts-user, users-groups, always]
-users:
+users: # run by "users-groups" option
   - default
   - name: admis
     groups: [wheel]
@@ -9,7 +9,7 @@ users:
     shell: /bin/bash
     ssh-authorized-keys:
       - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGsHMbqflou/Pow660rnIJq8wdtCnoJhzZfh6BAOWrxQ admis@admis-MS-7A34
-runcmd:
+runcmd: # run by "scripts-user" option
   - echo "--- begin --- goofys installation ----------------------------------------------"
   - echo "install fuse"
   - sudo yum install -y fuse
