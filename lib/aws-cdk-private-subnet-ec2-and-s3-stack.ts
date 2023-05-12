@@ -16,6 +16,7 @@ export class AwsCdkTemplateStack extends cdk.Stack {
 
     // S3 bucket
     const s3_bucket = new cdk.aws_s3.Bucket(this, 'test-bucket-to-mount-from-ec2', {
+      bucketName: 'test-bucket-to-mount-from-ec2', // Bucket Name は user-data.yaml のマウント設定でも利用しているため，揃える必要がある．aws s3 ls はできるので，ハッシュっぽい名前にするなら，例えば aws s3 ls | grep 'BucketName' などで抽出する．あるいは，値をパラメータストアとかに入れておいて読み込む
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       autoDeleteObjects: true,
     });
