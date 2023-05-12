@@ -18,7 +18,7 @@ export class AwsCdkTemplateStack extends cdk.Stack {
     const s3_bucket = new cdk.aws_s3.Bucket(this, 'test-bucket-to-mount-from-ec2', {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       autoDeleteObjects: true,
-    })
+    });
 
     // VPC
     const nat_instance = ec2.NatProvider.instance({
