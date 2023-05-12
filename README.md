@@ -17,7 +17,7 @@ ssh -i ~/.ssh/ec2/id_ed25519 admis@$EC2_INSTANCE_ID
 ## S3 との疎通確認
 
 - AWS CLI でアクセスする場合
-  ※ リージョン指定しないと通らない
+  ※ `~/.aws/config` に region を指定していない場合は，`--region` フラグで明示的にリージョン指定する必要がある
   ```bash
   aws s3 --region ap-northeast-1 ls
   aws s3 --region ap-northeast-1 ls s3://test-private-2023-0511
@@ -65,12 +65,31 @@ goofys --version
 
 ```bash
 mkdir test-2023-0511-bucket
-goofys test-2023-0511 $HOME/test-2023-0511-bucket
+goofys --region=ap-northeast-1 test-2023-0511 $HOME/test-2023-0511-bucket
+```
+※ `--region=ap-northeast-1` を付けないと，Gateway 型の S3 Endpoint 経由でなく，NAT Instance 経由で通信するため，NAT Instance を停止させた場合にマウントできない．
+
+マウント状況の確認
+```bash
+$ df -h
+ファイルシス   サイズ  使用  残り 使用% マウント位置
+devtmpfs         215M   68K  215M    1% /dev
+tmpfs            226M     0  226M    0% /dev/shm
+/dev/nvme0n1p1   7.8G  1.2G  6.6G   16% /
+test-2023-0511   1.0P     0  1.0P    0% /home/admis/test-2023-0511-bucket
 ```
 
 失敗した場合は，エラーログを見る
 ```bash
 sudo cat /var/log/messages
+```
+
+なお，永続化する場合は，下記の要領らしい．（未検証）
+```bash
+$ cat /etc/fstab
+/root/go/bin/goofys#testbucket /mnt/testbucket fuse _netdev,allow_other,--dir-mode=0775,--file-mode=0666,--uid=1000,--gid=1000,--region=ap-northeast-1 0 0
+
+> Ref: [VPCエンドポイントでS3にアクセスする場合のgoofys利用で気を付けておきたいこと](https://dev.classmethod.jp/articles/20190208-goofys/)
 ```
 
 ### 参考資料
