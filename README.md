@@ -120,6 +120,37 @@ sudo cat /var/log/cloud-init-output.log
 2. ec2.Instance で EC2 を作成する場合
    ソースコード参照
 
+### S3 Bucket Name のパラメータストアを通した連携
+
+- パラメータの設定例
+  ```typescript
+  const s3_bucket = new cdk.aws_s3.Bucket(this, 'test-bucket-to-mount-from-ec2', {
+    bucketName: 'test-bucket-to-mount-from-ec2',
+    removalPolicy: cdk.RemovalPolicy.DESTROY,
+    autoDeleteObjects: true,
+  });
+  const ssmParameter = new cdk.aws_ssm.StringParameter(this, 'aws_s3_bucket_name', {
+    parameterName: '/s3_bucket_name_to_mount_on_ec2/001',
+    stringValue: s3_bucket.bucketName,
+  });
+  ```
+  - 予約語
+    > Parameter name: can't be prefixed with "aws" or "ssm" (case-insensitive).
+  - [interface StringParameterProps - AWS CDK V2](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_ssm.StringParameterProps.html)
+- AWS CLI からのパラメータ取得
+  全てのパラメータの表示
+  ```bash
+  aws ssm get-parameters-by-path --path "/" --recursive --region ap-northeast-1 --region ap-northeast-1
+  ```
+  指定したパラメータの取得
+  ```bash
+  aws ssm get-parameter --name /s3_bucket_name_to_mount_on_ec2/001 --query "Parameter.Value" --region ap-northeast-1 | tr -d '"'
+  ```
+  - [Systems Manager パラメータを作成する (AWS CLI)](https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/param-create-cli.html)
+  - [[Shell command] 文字列からダブルクォーテーションを取り除く](https://documentroot.org/articles/remove-double-quotes-with-shell-command.html)
+
+※ EC2 からアクセスする場合は `AmazonSSMReadOnlyAccess` 権限を付与しておく．
+
 ---
 
 ## 付録
